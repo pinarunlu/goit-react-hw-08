@@ -1,34 +1,26 @@
-import React from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../redux/user/userSlice";
+// src/pages/LoginPage.jsx
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const initialValues = {
-    email: "",
-    password: "",
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const validationSchema = Yup.object({
-    email: Yup.string().email("Geçersiz e-posta adresi").required("E-posta gereklidir"),
-    password: Yup.string().min(6, "Şifre en az 6 karakter olmalıdır").required("Şifre gereklidir"),
-  });
+    // API'ye gönderilecek kullanıcı verileri
+    const userCredentials = { email, password };
 
-  const handleSubmit = async (values) => {
     try {
-      // API'ye gönderilecek kullanıcı verileri
-      const userCredentials = { email: values.email, password: values.password };
-
-      const response = await fetch("YOUR_BACKEND_API_URL/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      // Backend API'den cevap al (örneğin, login API endpoint'i)
+      const response = await fetch('https://6762b2ef46efb37323759854.mockapi.io/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userCredentials),
       });
 
@@ -39,37 +31,39 @@ const LoginPage = () => {
         dispatch(setUser(userData));
 
         // Giriş başarılıysa ContactsPage'e yönlendir
-        navigate("/contacts");
+        navigate('/contacts');
       } else {
-        alert("Giriş başarısız! Lütfen bilgilerinizi kontrol edin.");
+        alert('Giriş başarısız! Lütfen bilgilerinizi kontrol edin.');
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
     }
   };
 
   return (
-    <div className="container">
+    <div>
       <h2>Giriş Yap</h2>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        <Form>
-          <div>
-            <label htmlFor="email">E-posta</label>
-            <Field type="email" id="email" name="email" />
-            <ErrorMessage name="email" component="div" />
-          </div>
-          <div>
-            <label htmlFor="password">Şifre</label>
-            <Field type="password" id="password" name="password" />
-            <ErrorMessage name="password" component="div" />
-          </div>
-          <button type="submit">Giriş Yap</button>
-        </Form>
-      </Formik>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Şifre:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Giriş Yap</button>
+      </form>
     </div>
   );
 };

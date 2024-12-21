@@ -19,15 +19,16 @@ const RegisterPage = () => {
 
     try {
       // API'ye POST isteği gönderme
-      const response = await axios.post('api-url', userData);
-
+      const response = await axios.post('https://6762b2ef46efb37323759854.mockapi.io/contacts', userData);
+console.log('API yanıtı:', response);
       // Kullanıcı kaydı başarılı ise, kullanıcıyı login sayfasına yönlendir
-      if (response.data.success) {
-        dispatch(setUser(response.data.user)); // Kullanıcı bilgisini redux'a ekle
-        navigate('/login'); // Login sayfasına yönlendir
+     if (response.status === 201) {
+    dispatch(setUser(response.data));
+    navigate('/login');
       }
     } catch (err) {
-      setError('Kayıt sırasında bir hata oluştu!'); // Hata mesajı
+  console.error('Hata:', err);
+  setError('Kayıt sırasında bir hata oluştu!');
     }
   };
 
